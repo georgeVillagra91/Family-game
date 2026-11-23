@@ -3,10 +3,11 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import type { ComponentChildren } from 'preact';
 import { Avatar } from './avatar';
 import type { GameDef } from './engine';
+import type { VersusDef } from './versus';
 import { FX, loop } from './engine';
 import { sfx } from './audio';
 import type { Profile, RoundRecord } from './store';
-import { finalWinners, gameById, roundPoints, sideColor, sideLabel, sideTotals } from './match';
+import { finalWinners, gameById, isVersus, roundPoints, sideColor, sideLabel, sideTotals } from './match';
 
 const AUTOTEST = new URLSearchParams(location.search).has('autotest');
 
@@ -39,7 +40,7 @@ export function QuitButton({ onQuit, class: cls = 'iconbtn' }: { onQuit: () => v
   );
 }
 
-export function GameHero({ game, extra }: { game: GameDef; extra?: ComponentChildren }) {
+export function GameHero({ game, extra }: { game: GameDef | VersusDef; extra?: ComponentChildren }) {
   return (
     <div class="hero" style={{ background: `linear-gradient(160deg, ${game.color} 0%, ${game.color}99 45%, rgba(255,255,255,.06) 100%)` }}>
       <div class="ic">{game.icon}</div>
@@ -217,13 +218,14 @@ export function Podium({ sides, players, points }: { sides: string[][]; players:
   );
 }
 
-export function GameChip({ id, on, onClick, sub }: { id: string; on?: boolean; onClick?: () => void; sub?: string }) {
+export function GameChip({ id, on, off, onClick, sub }: { id: string; on?: boolean; off?: boolean; onClick?: () => void; sub?: string }) {
   const g = gameById(id);
+  const v = isVersus(g);
   return (
-    <button class={`game ${on ? 'on' : ''}`} style={{ background: `linear-gradient(160deg, ${g.color}, ${g.color}66)` }} onClick={onClick}>
+    <button class={`game ${on ? 'on' : ''} ${off ? 'off' : ''}`} style={{ background: `linear-gradient(160deg, ${g.color}, ${g.color}66)` }} onClick={onClick}>
       <span class="ic">{g.icon}</span>
       <b>{g.name}</b>
-      <span>{sub ?? `${g.type} · ${g.seconds} s`}</span>
+      <span>{sub ?? (off && v ? `Para ${g.min === g.max ? g.min : `${g.min} a ${g.max}`} ${g.seatsBy === 'side' ? 'lados' : 'jugadores'}` : `${g.type} · ${v ? 'todos juntos' : `${g.seconds} s`}`)}</span>
     </button>
   );
 }

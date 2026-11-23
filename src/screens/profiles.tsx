@@ -114,7 +114,7 @@ export function EditProfile({ nav, id }: { nav: Nav; id?: string }) {
         ))}
       </div>
       <p class="muted" style={{ margin: '-6px 4px 0', fontSize: '14px' }}>
-        La edad ajusta un poquito cada juego para que todos tengan chances de ganar.
+        La edad solo se usa para sortear equipos mezclados. Todos juegan con la misma dificultad.
       </p>
       <button class="btn green" onClick={save}>
         Guardar

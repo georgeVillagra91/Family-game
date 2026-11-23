@@ -4,7 +4,8 @@ import { sfx } from '../audio';
 import { Mode, Profile, RoundRecord, addMatch, getProfile, getProfiles, getSettings, setSettings, uid } from '../store';
 import type { Nav } from '../app';
 import { Room } from '../net';
-import { GAMES, MatchSetup, assistFor, finalWinners, gameById, newSeed, nightPoints, pickGames, roundWinners, sideColor, sideLabel, sideOf, suggestTeams } from '../match';
+import { GAMES, MatchSetup, assistFor, finalWinners, fits, gameById, isVersus, newSeed, nightPoints, pickGames, roundWinners, seatScoresToPlayers, seatsFor, sideColor, sideLabel, sideOf, suggestTeams } from '../match';
+import { VersusOnline } from '../versus';
 import { Confetti, GameChip, GameHero, PlayCanvas, Podium, QuitButton, RoundResult, ScoreRow, Standings, TopBar } from '../ui';
 
 interface OState {
@@ -242,7 +243,28 @@ function OnlineRoom({ room, me, nav }: { room: Room; me: Profile; nav: Nav }) {
   const amIn = setup ? setup.sides.flat().includes(me.id) : false;
   const game = setup ? gameById(setup.games[st.round]) : null;
 
-  if (st.phase === 'play' && setup && game && amIn && !played[`${st.matchId}-${st.round}`] && st.pending[me.id] === undefined) {
+  if (st.phase === 'play' && setup && game && isVersus(game)) {
+    const seats = seatsFor(game, setup.sides, st.players);
+    const mine = seats.map((s, i) => (s.pids.includes(me.id) ? i : -1)).filter((i) => i >= 0);
+    return (
+      <VersusOnline
+        key={`v${st.matchId}-${st.round}`}
+        def={game}
+        ctx={{ seats, seed: st.seed, local: false }}
+        room={room}
+        me={mine}
+        round={st.round}
+        onQuit={leave}
+        onDone={(seatScores) => {
+          if (!isHost) return;
+          const sc = seatScoresToPlayers(seats, seatScores);
+          update((s) => ({ ...s, pending: { ...s.pending, ...sc } }));
+        }}
+      />
+    );
+  }
+
+  if (st.phase === 'play' && setup && game && !isVersus(game) && amIn && !played[`${st.matchId}-${st.round}`] && st.pending[me.id] === undefined) {
     const si = sideOf(setup.sides, me.id);
     return <PlayCanvas key={`o${st.round}`} game={game} seed={st.seed} assist={assistFor(me, si, points)} color={sideColor(si)} onEnd={myScore} />;
   }
@@ -335,7 +357,7 @@ function OnlineRoom({ room, me, nav }: { room: Room; me: Profile; nav: Nav }) {
           <Podium sides={setup.sides} players={st.players} points={points} />
           {isHost ? (
             <div class="stack" style={{ marginTop: 'auto' }}>
-              <button class="btn pink" onClick={() => update((s) => ({ ...s, phase: 'intro', round: 0, rounds: [], pending: {}, seed: newSeed(), matchId: uid(), setup: { ...s.setup!, games: s.setup!.games.length > 1 ? pickGames(s.setup!.games.length) : s.setup!.games } }))}>
+              <button class="btn pink" onClick={() => update((s) => ({ ...s, phase: 'intro', round: 0, rounds: [], pending: {}, seed: newSeed(), matchId: uid(), setup: { ...s.setup!, games: s.setup!.games.length > 1 ? pickGames(s.setup!.games.length, s.setup!.sides) : s.setup!.games } }))}>
                 🔁 ¡Revancha!
               </button>
               <button class="btn ghost" onClick={() => update((s) => ({ ...s, phase: 'lobby', setup: null }))}>
@@ -423,7 +445,7 @@ function HostLobby({ room, st, start }: { room: Room; st: OState; start: (s: Mat
   const go = () => {
     const sides = mode === '2v2' ? validTeams! : chosen.map((id) => [id]);
     sfx.go();
-    start({ mode, sides, games: length === 1 ? [single] : pickGames(length) });
+    start({ mode, sides, games: length === 1 ? [single] : pickGames(length, sides) });
   };
 
   return (
@@ -481,12 +503,14 @@ function HostLobby({ room, st, start }: { room: Room; st: OState; start: (s: Mat
       </div>
       {length === 1 && (
         <div class="games">
-          {GAMES.map((g) => (
-            <GameChip id={g.id} on={single === g.id} onClick={() => setSingle(g.id)} />
-          ))}
+          {GAMES.map((g) => {
+            const sd = mode === '2v2' ? validTeams : chosen.map((id) => [id]);
+            const ok = !sd || fits(g, sd);
+            return <GameChip id={g.id} on={single === g.id && ok} off={!ok} onClick={() => ok && setSingle(g.id)} />;
+          })}
         </div>
       )}
-      <button class="btn" disabled={!ready || (mode === '2v2' && !validTeams)} onClick={go}>
+      <button class="btn" disabled={!ready || (mode === '2v2' && !validTeams) || (length === 1 && !fits(gameById(single), mode === '2v2' ? validTeams ?? [] : chosen.map((id) => [id])))} onClick={go}>
         {ready ? '¡Empezar!' : `Hacen falta ${min === max ? min : `de ${min} a ${max}`} jugadores`}
       </button>
     </>

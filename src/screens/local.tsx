@@ -3,7 +3,8 @@ import { Avatar } from '../avatar';
 import { sfx } from '../audio';
 import { Mode, Profile, RoundRecord, addMatch, getProfiles, newGuest, personalBest, uid, upsertProfile } from '../store';
 import type { Nav } from '../app';
-import { GAMES, MatchSetup, assistFor, finalWinners, gameById, newSeed, nightPoints, pickGames, roundWinners, sideColor, sideLabel, sideOf, suggestTeams, turnOrder } from '../match';
+import { GAMES, MatchSetup, assistFor, finalWinners, fits, gameById, isVersus, newSeed, nightPoints, pickGames, roundWinners, seatScoresToPlayers, seatsFor, sideColor, sideLabel, sideOf, suggestTeams, turnOrder } from '../match';
+import { VersusLocal } from '../versus';
 import { Confetti, GameChip, GameHero, PlayCanvas, Podium, QuitButton, RoundResult, Standings, TopBar } from '../ui';
 
 const NEED: Record<Mode, [number, number]> = { '1v1': [2, 2], '2v2': [4, 4], todos: [2, 6] };
@@ -51,7 +52,7 @@ export function LocalSetup({ nav, preset }: { nav: Nav; preset?: MatchSetup }) {
   const start = () => {
     if (!sides) return;
     sfx.go();
-    const games = length === 1 ? [single] : pickGames(length);
+    const games = length === 1 ? [single] : pickGames(length, sides);
     nav({ name: 'localMatch', setup: { mode, sides, games } });
   };
 
@@ -141,12 +142,13 @@ export function LocalSetup({ nav, preset }: { nav: Nav; preset?: MatchSetup }) {
       </div>
       {length === 1 && (
         <div class="games">
-          {GAMES.map((g) => (
-            <GameChip id={g.id} on={single === g.id} onClick={() => (sfx.click(), setSingle(g.id))} />
-          ))}
+          {GAMES.map((g) => {
+            const ok = !sides || fits(g, sides);
+            return <GameChip id={g.id} on={single === g.id && ok} off={!ok} onClick={() => ok && (sfx.click(), setSingle(g.id))} />;
+          })}
         </div>
       )}
-      <button class="btn" disabled={!ready} onClick={start} style={{ marginTop: '6px' }}>
+      <button class="btn" disabled={!ready || (length === 1 && !!sides && !fits(gameById(single), sides))} onClick={start} style={{ marginTop: '6px' }}>
         {ready ? '¡A jugar!' : `Elegí ${min === max ? min : `de ${min} a ${max}`} jugadores`}
       </button>
     </div>
@@ -171,7 +173,20 @@ export function LocalMatch({ nav, setup }: { nav: Nav; setup: MatchSetup }) {
   const quit = () => nav({ name: 'home' });
   const solo = setup.sides.every((s) => s.length === 1);
 
-  if (phase.t === 'play') {
+  if (phase.t === 'play' && isVersus(game)) {
+    const seats = seatsFor(game, setup.sides, players);
+    return (
+      <VersusLocal
+        key={`v${round}`}
+        def={game}
+        ctx={{ seats, seed: seeds[round][0], local: true }}
+        onQuit={quit}
+        onDone={(seatScores) => finishRound(seatScoresToPlayers(seats, seatScores))}
+      />
+    );
+  }
+
+  if (phase.t === 'play' && !isVersus(game)) {
     const pid = order[phase.i];
     const p = pOf(pid);
     const si = sideOf(setup.sides, pid);
@@ -191,8 +206,9 @@ export function LocalMatch({ nav, setup }: { nav: Nav; setup: MatchSetup }) {
     );
   }
 
-  const finishRound = () => {
-    const rec: RoundRecord = { game: game.id, scores, winnerSides: roundWinners(setup.sides, scores) };
+  function finishRound(sc: Record<string, number> = scores) {
+    setScores(sc);
+    const rec: RoundRecord = { game: game.id, scores: sc, winnerSides: roundWinners(setup.sides, sc) };
     const all = [...rounds, rec];
     setRounds(all);
     sfx.win();
@@ -201,7 +217,8 @@ export function LocalMatch({ nav, setup }: { nav: Nav; setup: MatchSetup }) {
       const pts = nightPoints(setup.sides, all, total);
       addMatch({ id: matchId, date: Date.now(), online: false, mode: setup.mode, players, sides: setup.sides, rounds: all, stars: pts, winnerSides: finalWinners(pts) });
     }
-  };
+  }
+
 
   return (
     <div class="screen">
@@ -216,17 +233,17 @@ export function LocalMatch({ nav, setup }: { nav: Nav; setup: MatchSetup }) {
       {phase.t === 'intro' && (
         <>
           <GameHero game={game} />
-          <div class="label">Orden de turnos</div>
+          <div class="label">{isVersus(game) ? 'Juegan todos juntos' : 'Orden de turnos'}</div>
           <div class="row wrap" style={{ justifyContent: 'center' }}>
             {order.map((pid, i) => (
               <div class="center" style={{ fontWeight: 800 }}>
                 <Avatar spec={pOf(pid).avatar} size={56} ring={sideColor(sideOf(setup.sides, pid))} />
-                {i + 1}. {pOf(pid).name}
+                {isVersus(game) ? '' : `${i + 1}. `}{pOf(pid).name}
               </div>
             ))}
           </div>
           {round > 0 && <Standings sides={setup.sides} players={players} points={points} />}
-          <button class="btn" style={{ marginTop: 'auto' }} onClick={() => (sfx.tap(), setPhase({ t: 'handoff', i: 0 }))}>
+          <button class="btn" style={{ marginTop: 'auto' }} onClick={() => (sfx.tap(), setPhase(isVersus(game) ? { t: 'play', i: 0 } : { t: 'handoff', i: 0 }))}>
             ¡Empezar!
           </button>
         </>
@@ -272,7 +289,7 @@ export function LocalMatch({ nav, setup }: { nav: Nav; setup: MatchSetup }) {
             onClick={() => {
               sfx.tap();
               if (phase.i + 1 < order.length) setPhase({ t: 'handoff', i: phase.i + 1 });
-              else finishRound();
+              else finishRound(scores);
             }}
           >
             {phase.i + 1 < order.length ? `Sigue ${pOf(order[phase.i + 1]).name}` : 'Ver resultado'}
@@ -333,7 +350,7 @@ function Final({ setup, players, points, nav }: { setup: MatchSetup; players: Pr
       </div>
       <Podium sides={setup.sides} players={players} points={points} />
       <div class="stack" style={{ marginTop: 'auto' }}>
-        <button class="btn pink" onClick={() => (sfx.tap(), nav({ name: 'localMatch', setup: { ...setup, games: setup.games.length > 1 ? pickGames(setup.games.length) : setup.games } }))}>
+        <button class="btn pink" onClick={() => (sfx.tap(), nav({ name: 'localMatch', setup: { ...setup, games: setup.games.length > 1 ? pickGames(setup.games.length, setup.sides) : setup.games } }))}>
           🔁 ¡Revancha!
         </button>
         <button class="btn ghost" onClick={() => nav({ name: 'setup', preset: setup })}>

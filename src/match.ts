@@ -1,16 +1,45 @@
 // Reglas de una "Noche de Juegos": equipos, puntos, ventaja invisible y resultado final.
 import type { GameDef } from './engine';
+import type { Seat, VersusDef } from './versus';
+import { tateti } from './games/tateti';
+import { memoria } from './games/memoria';
+import { caracoles } from './games/caracoles';
+import { bingo } from './games/bingo';
 import type { Mode, Profile, RoundRecord } from './store';
 import { frutas } from './games/frutas';
 import { globos, BALLOON_COLORS } from './games/globos';
 import { monos } from './games/monos';
 import { duelo } from './games/duelo';
-import { panqueques } from './games/panqueques';
 import { pares } from './games/pares';
 
+export type AnyGame = GameDef | VersusDef;
 /** Para sumar un juego nuevo: crear su archivo en src/games y agregarlo acá. */
-export const GAMES: GameDef[] = [frutas, globos, monos, duelo, panqueques, pares];
+export const GAMES: AnyGame[] = [caracoles, bingo, tateti, memoria, frutas, globos, monos, duelo, pares];
 export const gameById = (id: string) => GAMES.find((g) => g.id === id)!;
+export const isVersus = (g: AnyGame): g is VersusDef => (g as VersusDef).kind === 'versus';
+
+/** ¿Se puede jugar este juego con estos lados? */
+export function fits(g: AnyGame, sides: string[][]) {
+  if (!isVersus(g)) return true;
+  const n = g.seatsBy === 'side' ? sides.length : sides.flat().length;
+  return n >= g.min && n <= g.max;
+}
+
+/** Asientos de un juego versus: uno por lado o uno por jugador (alternando lados). */
+export function seatsFor(g: VersusDef, sides: string[][], players: Profile[]): Seat[] {
+  const pOf = (id: string) => players.find((p) => p.id === id)!;
+  if (g.seatsBy === 'side')
+    return sides.map((s, i) => ({ pids: s, name: s.map((id) => pOf(id)?.name ?? '?').join(' y '), color: sideColor(i), avatar: pOf(s[0]).avatar }));
+  return turnOrder(sides).map((id, i) => ({ pids: [id], name: pOf(id)?.name ?? '?', color: SEAT_COLORS[i % SEAT_COLORS.length], avatar: pOf(id).avatar }));
+}
+export const SEAT_COLORS = ['#ff4d6d', '#4d8bff', '#3ddc84', '#ffb020', '#a66bff', '#ff6fd8'];
+
+/** Pasa el puntaje por asiento a puntaje por jugador. */
+export function seatScoresToPlayers(seats: Seat[], seatScores: number[]): Record<string, number> {
+  const out: Record<string, number> = {};
+  seats.forEach((s, i) => s.pids.forEach((pid) => (out[pid] = Math.round(seatScores[i] ?? 0))));
+  return out;
+}
 
 export const SIDE_COLORS = BALLOON_COLORS.map((b) => b.c);
 export const SIDE_NAMES = ['Rojo', 'Azul', 'Verde', 'Violeta'];
@@ -43,11 +72,12 @@ export function suggestTeams(ps: Profile[]): string[][] {
 }
 
 /** Elige N juegos al azar sin repetir el mismo tipo dos veces seguidas. */
-export function pickGames(n: number): string[] {
-  const out: GameDef[] = [];
-  let pool = [...GAMES].sort(() => Math.random() - 0.5);
+export function pickGames(n: number, sides?: string[][]): string[] {
+  const all = sides ? GAMES.filter((g) => fits(g, sides)) : GAMES;
+  const out: AnyGame[] = [];
+  let pool = [...all].sort(() => Math.random() - 0.5);
   while (out.length < n) {
-    if (pool.length === 0) pool = [...GAMES].sort(() => Math.random() - 0.5);
+    if (pool.length === 0) pool = [...all].sort(() => Math.random() - 0.5);
     const last = out[out.length - 1];
     const idx = pool.findIndex((g) => !last || (g.type !== last.type && g.id !== last.id));
     const g = pool.splice(idx >= 0 ? idx : 0, 1)[0];
@@ -92,15 +122,10 @@ export function finalWinners(points: number[]): number[] {
   return points.map((p, i) => (p === max ? i : -1)).filter((i) => i >= 0);
 }
 
-/**
- * Ventaja invisible (0..1). Base según el nivel de ayuda del perfil
- * y un empujoncito si su lado viene perdiendo la noche por 3 o más puntos.
- */
-export function assistFor(p: Profile, sideIdx: number, points: number[]): number {
-  const base = p.level === 1 ? 0.75 : p.level === 2 ? 0.4 : 0;
-  const max = Math.max(...points, 0);
-  const behind = points.length > 1 && max - (points[sideIdx] ?? 0) >= 3 ? 0.15 : 0;
-  return Math.max(0, Math.min(1, base + behind));
+/** Ayuda dentro de cada juego (0..1). Hoy es 0 para todos: misma dificultad. */
+export function assistFor(_p: Profile, _sideIdx: number, _points: number[]): number {
+  // George pidió dificultad igual para todos: sin ventajas por edad ni por ir perdiendo.
+  return 0;
 }
 
 export function sideOf(sides: string[][], pid: string) {
