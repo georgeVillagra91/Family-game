@@ -111,7 +111,7 @@ function Card({ s, ctx, seat, act, rot }: { s: S; ctx: VCtx; seat: number; act: 
                   act(seat, { mark: i });
                 }}
               >
-                {n}
+                <span>{n}</span>
               </button>
             );
           })

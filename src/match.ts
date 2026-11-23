@@ -5,6 +5,7 @@ import { tateti } from './games/tateti';
 import { memoria } from './games/memoria';
 import { caracoles } from './games/caracoles';
 import { bingo } from './games/bingo';
+import { naval } from './games/naval';
 import type { Mode, Profile, RoundRecord } from './store';
 import { frutas } from './games/frutas';
 import { globos, BALLOON_COLORS } from './games/globos';
@@ -14,7 +15,7 @@ import { pares } from './games/pares';
 
 export type AnyGame = GameDef | VersusDef;
 /** Para sumar un juego nuevo: crear su archivo en src/games y agregarlo acá. */
-export const GAMES: AnyGame[] = [caracoles, bingo, tateti, memoria, frutas, globos, monos, duelo, pares];
+export const GAMES: AnyGame[] = [caracoles, bingo, naval, tateti, memoria, frutas, globos, monos, duelo, pares];
 export const gameById = (id: string) => GAMES.find((g) => g.id === id)!;
 export const isVersus = (g: AnyGame): g is VersusDef => (g as VersusDef).kind === 'versus';
 
