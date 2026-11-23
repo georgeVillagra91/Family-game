@@ -54,12 +54,19 @@ export interface VersusDef<S = any, A = any> {
 
 export { isMine } from './vsui';
 
+const AUTOTEST = typeof location !== 'undefined' && new URLSearchParams(location.search).has('autotest');
+
 /** Partida versus en un solo dispositivo. */
 export function VersusLocal({ def, ctx, onDone, onQuit }: { def: VersusDef; ctx: VCtx; onDone: (scores: number[]) => void; onQuit: () => void }) {
   const sRef = useRef<any>(null);
   if (!sRef.current) sRef.current = def.init(ctx);
   const [, force] = useState(0);
   const finished = useRef(false);
+  useEffect(() => {
+    if (!AUTOTEST) return;
+    const t = setTimeout(() => onDone(ctx.seats.map(() => Math.floor(Math.random() * 40))), 500);
+    return () => clearTimeout(t);
+  }, []);
   const check = () => {
     const r = def.done(sRef.current);
     if (r && !finished.current) {
@@ -113,6 +120,10 @@ export function VersusOnline({ def, ctx, room, me, round, onDone, onQuit }: { de
   const dirty = useRef(true);
 
   useEffect(() => {
+    if (AUTOTEST && isHost) {
+      const t = setTimeout(() => onDone(ctx.seats.map(() => Math.floor(Math.random() * 40))), 800);
+      return () => clearTimeout(t);
+    }
     if (isHost) {
       const off = room.on((m) => {
         if (m.t === 'vsready') dirty.current = true;
