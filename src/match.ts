@@ -36,7 +36,7 @@ export function seatsFor(g: VersusDef, sides: string[][], players: Profile[]): S
     return sides.map((s, i) => ({ pids: s, name: s.map((id) => pOf(id)?.name ?? '?').join(' y '), color: sideColor(i), avatar: pOf(s[0]).avatar }));
   return turnOrder(sides).map((id, i) => ({ pids: [id], name: pOf(id)?.name ?? '?', color: SEAT_COLORS[i % SEAT_COLORS.length], avatar: pOf(id).avatar }));
 }
-export const SEAT_COLORS = ['#ff4d6d', '#4d8bff', '#3ddc84', '#ffb020', '#a66bff', '#ff6fd8'];
+export const SEAT_COLORS = ['#ff1f3d', '#1ed760', '#a259ff', '#ff6a00', '#ff4fb8', '#e8e8f0'];
 
 /** Pasa el puntaje por asiento a puntaje por jugador. */
 export function seatScoresToPlayers(seats: Seat[], seatScores: number[]): Record<string, number> {
@@ -46,7 +46,7 @@ export function seatScoresToPlayers(seats: Seat[], seatScores: number[]): Record
 }
 
 export const SIDE_COLORS = BALLOON_COLORS.map((b) => b.c);
-export const SIDE_NAMES = ['Rojo', 'Azul', 'Verde', 'Violeta'];
+export const SIDE_NAMES = ['Rojo', 'Verde', 'Violeta', 'Naranja'];
 
 export interface MatchSetup {
   mode: Mode;

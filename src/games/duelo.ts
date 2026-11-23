@@ -93,7 +93,7 @@ function drawKettle(ctx: CanvasRenderingContext2D, x: number, y: number, s: numb
     ctx.arc(78 + Math.sin(t * 6 + i) * 6 + i * 6, -40 - i * 18, 8 + i * 3, 0, Math.PI * 2);
     ctx.fill();
   }
-  ctx.fillStyle = '#1fc8db';
+  ctx.fillStyle = '#ff1f3d';
   ctx.beginPath();
   ctx.moveTo(40, -10);
   ctx.lineTo(80, -40);

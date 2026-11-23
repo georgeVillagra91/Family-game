@@ -4,9 +4,9 @@ import { sfx, vibrate } from '../audio';
 
 const DRUMS = [
   { c: '#ff5d73', d: '#b3203a' },
-  { c: '#ffd23f', d: '#c99400' },
-  { c: '#3ddc84', d: '#14a35a' },
-  { c: '#4d8bff', d: '#2546c9' }
+  { c: '#1ed760', d: '#0e9c43' },
+  { c: '#a259ff', d: '#6420d0' },
+  { c: '#ff6a00', d: '#c24400' }
 ];
 const MAX_TIME = 90;
 
@@ -95,7 +95,7 @@ export const monos: GameDef = {
   scene: 'Templo en la selva',
   type: 'Atención',
   icon: '🐒',
-  color: '#ffd23f',
+  color: '#ff6a00',
   seconds: 60,
   howTo: 'Mirá qué tambores toca el mono y repetí la secuencia. ¡Cada vez es más larga!',
   run(env) {

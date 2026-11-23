@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import { ACC_NAMES, AVATAR_OPTIONS, Avatar, AvatarSpec, EYE_NAMES, HAIR_COLORS, HAIR_NAMES, MOUTH_NAMES, PALETTE, SKINS, randomAvatar } from '../avatar';
+import { ACC_NAMES, AVATAR_OPTIONS, Avatar, AvatarSpec, BEARD_NAMES, EYE_NAMES, HAIR_COLORS, HAIR_NAMES, MOUTH_NAMES, PALETTE, SKINS, randomAvatar } from '../avatar';
 import { sfx } from '../audio';
 import { LEVEL_NAMES, Level, Profile, deleteProfile, getProfile, getProfiles, newGuest, uid, upsertProfile } from '../store';
 import type { Nav } from '../app';
@@ -45,7 +45,7 @@ function Stepper({ k, label, names, spec, set }: { k: Key; label: string; names:
   const n = AVATAR_OPTIONS[k];
   const step = (d: number) => {
     sfx.click();
-    set({ ...spec, [k]: (spec[k] + d + n) % n });
+    set({ ...spec, [k]: ((spec[k] ?? 0) + d + n) % n });
   };
   return (
     <div class="optrow">
@@ -53,7 +53,7 @@ function Stepper({ k, label, names, spec, set }: { k: Key; label: string; names:
       <button class="iconbtn" onClick={() => step(-1)} aria-label={`${label} anterior`}>
         ‹
       </button>
-      <span class="name">{names[spec[k]]}</span>
+      <span class="name">{names[spec[k] ?? 0]}</span>
       <button class="iconbtn" onClick={() => step(1)} aria-label={`${label} siguiente`}>
         ›
       </button>
@@ -97,6 +97,7 @@ export function EditProfile({ nav, id }: { nav: Nav; id?: string }) {
         <Swatches k="hairColor" label="Color pelo" colors={HAIR_COLORS} spec={p.avatar} set={set} />
         <Stepper k="eyes" label="Ojos" names={EYE_NAMES} spec={p.avatar} set={set} />
         <Stepper k="mouth" label="Boca" names={MOUTH_NAMES} spec={p.avatar} set={set} />
+        <Stepper k="beard" label="Barba" names={BEARD_NAMES} spec={p.avatar} set={set} />
         <Stepper k="acc" label="Extra" names={ACC_NAMES} spec={p.avatar} set={set} />
         <Swatches k="shirt" label="Remera" colors={PALETTE} spec={p.avatar} set={set} />
         <Swatches k="bg" label="Fondo" colors={PALETTE} spec={p.avatar} set={set} />

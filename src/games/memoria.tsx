@@ -6,7 +6,7 @@ import { rng } from '../engine';
 import { sfx, vibrate } from '../audio';
 
 const FACES = ['🐶', '🐱', '🦊', '🐼', '🐸', '🦁', '🐵', '🐧', '🦄', '🐙', '🐢', '🦋'];
-const BG = ['#ff8fab', '#ffd166', '#8ce99a', '#74c0fc', '#b197fc', '#ffa94d', '#63e6be', '#f783ac', '#a9e34b', '#4dabf7', '#ffc078', '#da77f2'];
+const BG = ['#ff8fab', '#ffd166', '#8ce99a', '#ff6b6b', '#b197fc', '#ffa94d', '#63e6be', '#f783ac', '#a9e34b', '#ff5c8a', '#ffc078', '#da77f2'];
 
 interface S {
   faces: number[];

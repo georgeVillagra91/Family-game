@@ -7,7 +7,7 @@ import type { VersusDef } from './versus';
 import { FX, loop } from './engine';
 import { sfx } from './audio';
 import type { Profile, RoundRecord } from './store';
-import { finalWinners, gameById, isVersus, roundPoints, sideColor, sideLabel, sideTotals } from './match';
+import { gameById, isVersus, roundPoints, sideColor, sideLabel, sideTotals } from './match';
 
 const AUTOTEST = new URLSearchParams(location.search).has('autotest');
 
@@ -143,40 +143,55 @@ export function ScoreRow({ p, score, best }: { p: Profile; score: number | undef
   );
 }
 
+/** Puesto de cada lado (1 = primero). Los empatados comparten puesto y el siguiente sigue en orden (1, 1, 2). */
+export function places(values: number[]): number[] {
+  const uniq = [...new Set(values)].sort((a, b) => b - a);
+  return values.map((v) => 1 + uniq.indexOf(v));
+}
+const MEDAL = ['🥇', '🥈', '🥉'];
+export const medal = (place: number) => MEDAL[place - 1] ?? `${place}°`;
+
 export function RoundResult({ sides, players, record, roundIdx, totalRounds }: { sides: string[][]; players: Profile[]; record: RoundRecord; roundIdx: number; totalRounds: number }) {
   const totals = sideTotals(sides, record.scores);
   const pts = roundPoints(sides, record.scores, roundIdx, totalRounds);
   const solo = sides.every((s) => s.length === 1);
+  const pl = places(totals);
+  const order = sides.map((_, i) => i).sort((a, b) => totals[b] - totals[a] || a - b);
   return (
     <div class="stack">
-      {sides.map((s, i) => (
-        <div class={`sidebox ${record.winnerSides.includes(i) ? 'win' : ''}`} style={{ borderColor: sideColor(i), background: `${sideColor(i)}22` }}>
-          <div class="sidehead">
-            <span>
-              {record.winnerSides.includes(i) ? '🏆 ' : ''}
-              {solo ? players.find((p) => p.id === s[0])?.name : sideLabel(sides, i, players)}
-            </span>
-            <span>
-              {totals[i]} <span class="pill">+{pts[i]} pts</span>
-            </span>
+      {order.map((i) => {
+        const s = sides[i];
+        return (
+          <div class={`sidebox ${record.winnerSides.includes(i) ? 'win' : ''}`} style={{ borderColor: sideColor(i), background: `${sideColor(i)}22` }}>
+            <div class="sidehead">
+              <span class="row" style={{ gap: '8px' }}>
+                <span class="place">{medal(pl[i])}</span>
+                {solo ? players.find((p) => p.id === s[0])?.name : sideLabel(sides, i, players)}
+              </span>
+              <span>
+                {totals[i]} <span class="pill">+{pts[i]} pts</span>
+              </span>
+            </div>
+            {!solo &&
+              s.map((pid) => {
+                const p = players.find((x) => x.id === pid)!;
+                return <ScoreRow p={p} score={record.scores[pid]} />;
+              })}
           </div>
-          {!solo &&
-            s.map((pid) => {
-              const p = players.find((x) => x.id === pid)!;
-              return <ScoreRow p={p} score={record.scores[pid]} />;
-            })}
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
 
 export function Standings({ sides, players, points }: { sides: string[][]; players: Profile[]; points: number[] }) {
-  const order = sides.map((_, i) => i).sort((a, b) => points[b] - points[a]);
+  const order = sides.map((_, i) => i).sort((a, b) => points[b] - points[a] || a - b);
+  const pl = places(points);
   return (
     <div class="stack">
       {order.map((i) => (
         <div class="scorerow" style={{ background: `${sideColor(i)}33` }}>
+          <span class="place">{medal(pl[i])}</span>
           <div class="row" style={{ gap: '0' }}>
             {sides[i].map((pid) => {
               const p = players.find((x) => x.id === pid);
@@ -191,27 +206,41 @@ export function Standings({ sides, players, points }: { sides: string[][]; playe
   );
 }
 
+/** Resultado final: el campeón arriba de todo, y después el resto en orden. */
 export function Podium({ sides, players, points }: { sides: string[][]; players: Profile[]; points: number[] }) {
-  const winners = finalWinners(points);
-  const order = sides.map((_, i) => i).sort((a, b) => points[b] - points[a]);
-  const top = order.slice(0, 3);
-  const arrange = top.length === 3 ? [top[1], top[0], top[2]] : top.length === 2 ? [top[1], top[0]] : top;
-  const heights = (i: number) => (winners.includes(i) ? 130 : order.indexOf(i) === 1 ? 92 : 64);
+  const pl = places(points);
+  const order = sides.map((_, i) => i).sort((a, b) => points[b] - points[a] || a - b);
+  const champs = order.filter((i) => pl[i] === 1);
+  const rest = order.filter((i) => pl[i] !== 1);
+  const avatars = (i: number, size: number) => (
+    <div class="row" style={{ gap: 0, justifyContent: 'center' }}>
+      {sides[i].map((pid) => {
+        const p = players.find((x) => x.id === pid);
+        return p ? <Avatar spec={p.avatar} size={sides[i].length > 1 ? size * 0.8 : size} ring="#fff" /> : null;
+      })}
+    </div>
+  );
   return (
     <div class="podium">
-      {arrange.map((i) => (
-        <div class="step">
-          {winners.includes(i) && <div class="crown">👑</div>}
-          <div class="row" style={{ gap: 0, justifyContent: 'center' }}>
-            {sides[i].map((pid) => {
-              const p = players.find((x) => x.id === pid);
-              return p ? <Avatar spec={p.avatar} size={sides[i].length > 1 ? 58 : 76} ring="#fff" /> : null;
-            })}
+      <div class={`champs n${champs.length}`}>
+        {champs.map((i) => (
+          <div class="champ" style={{ ['--c' as any]: sideColor(i) }}>
+            <div class="crown">👑</div>
+            {avatars(i, champs.length > 1 ? 72 : 96)}
+            <div class="champ-name">{sideLabel(sides, i, players)}</div>
+            <div class="champ-pts">
+              <span class="first">1°</span>
+              <span>{points[i]} pts</span>
+            </div>
           </div>
-          <b style={{ textAlign: 'center', lineHeight: 1.05 }}>{sideLabel(sides, i, players)}</b>
-          <div class="block" style={{ height: `${heights(i)}px`, background: winners.includes(i) ? 'linear-gradient(#fff6c2,#ffd23f)' : order.indexOf(i) === 1 ? 'linear-gradient(#ffffff,#c9d3e6)' : 'linear-gradient(#ffd2a8,#e0985a)' }}>
-            {points[i]}
-          </div>
+        ))}
+      </div>
+      {rest.map((i) => (
+        <div class="scorerow placed" style={{ background: `${sideColor(i)}2e` }}>
+          <span class="place">{medal(pl[i])}</span>
+          {avatars(i, 44)}
+          <span>{sideLabel(sides, i, players)}</span>
+          <span class="n">{points[i]}</span>
         </div>
       ))}
     </div>

@@ -14,7 +14,7 @@ export const pares: GameDef = {
   scene: 'Biblioteca mágica',
   type: 'Atención',
   icon: '📚',
-  color: '#8c5bff',
+  color: '#a259ff',
   seconds: DURATION,
   howTo: 'Hay un solo dibujo que está en los dos libros. ¡Tocalo lo más rápido que puedas!',
   run(env) {
@@ -107,8 +107,8 @@ export const pares: GameDef = {
       ctx.save();
       fx.applyShake(ctx);
       const bg = ctx.createLinearGradient(0, 0, 0, h);
-      bg.addColorStop(0, '#3b1f6e');
-      bg.addColorStop(1, '#1d1140');
+      bg.addColorStop(0, '#5a0a1a');
+      bg.addColorStop(1, '#1c0509');
       ctx.fillStyle = bg;
       ctx.fillRect(-20, -20, w + 40, h + 40);
       // estantes con libros
@@ -117,7 +117,7 @@ export const pares: GameDef = {
         ctx.fillStyle = 'rgba(0,0,0,.25)';
         ctx.fillRect(0, y + 44, w, 6);
         for (let i = 0; i < 14; i++) {
-          ctx.fillStyle = ['#ff5d73', '#ffd23f', '#3ddc84', '#4d8bff', '#ff9f43', '#a66bff'][(i + row * 3) % 6];
+          ctx.fillStyle = ['#ff1f3d', '#ffffff', '#1ed760', '#a259ff', '#ff6a00', '#ff4fb8'][(i + row * 3) % 6];
           ctx.globalAlpha = 0.18;
           ctx.fillRect(i * (w / 14) + 2, y + 44 - (30 + ((i * 7 + row * 5) % 14)), w / 14 - 5, 30 + ((i * 7 + row * 5) % 14));
         }
@@ -145,7 +145,7 @@ export const pares: GameDef = {
         ctx.fill();
         ctx.shadowColor = 'transparent';
         ctx.lineWidth = 8;
-        ctx.strokeStyle = ci === 0 ? '#ffd23f' : '#1fc8db';
+        ctx.strokeStyle = ci === 0 ? '#ffffff' : '#ff1f3d';
         ctx.stroke();
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';

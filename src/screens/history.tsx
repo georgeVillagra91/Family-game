@@ -4,7 +4,7 @@ import { sfx } from '../audio';
 import { clearHistory, computeRecords, computeStats, getHistory } from '../store';
 import type { Nav } from '../app';
 import { GAMES, gameById, sideLabel } from '../match';
-import { TopBar } from '../ui';
+import { TopBar, medal, places } from '../ui';
 
 const fmt = (d: number) => new Date(d).toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
@@ -14,7 +14,9 @@ export function History({ nav }: { nav: Nav }) {
   const stats = computeStats();
   const recs = computeRecords();
   const hist = getHistory();
-  const medal = (i: number) => (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}`);
+  // Puesto compartido cuando empatan en victorias y en juegos ganados.
+  const keys = stats.map((s) => s.wins * 100000 + s.roundsWon);
+  const pl = places(keys);
   return (
     <div class="screen">
       <TopBar title="Ranking e historial" onBack={() => nav({ name: 'home' })} />
@@ -36,8 +38,8 @@ export function History({ nav }: { nav: Nav }) {
         <div class="stack">
           {stats.length === 0 && <p class="muted center">Todavía no hay partidas. ¡Jueguen la primera!</p>}
           {stats.map((s, i) => (
-            <div class="rank">
-              <span class="pos">{medal(i)}</span>
+            <div class={`rank ${pl[i] === 1 ? 'top' : ''}`}>
+              <span class="pos">{medal(pl[i])}</span>
               <Avatar spec={s.avatar} size={52} />
               <div class="info">
                 <b>{s.name}</b>

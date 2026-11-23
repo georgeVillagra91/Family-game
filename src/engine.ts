@@ -127,7 +127,7 @@ export class FX {
     }
   }
   confetti(w: number, n = 80) {
-    const cols = ['#ff5d73', '#ffd23f', '#3ddc84', '#1fc8db', '#8c5bff', '#ff9f43'];
+    const cols = ['#ff1f3d', '#ffffff', '#ff1f3d', '#ffffff', '#1ed760', '#a259ff', '#ff6a00'];
     for (let i = 0; i < n; i++) this.ps.push({ x: Math.random() * w, y: -20 - Math.random() * 200, vx: (Math.random() - 0.5) * 80, vy: 80 + Math.random() * 120, life: 0, max: 3 + Math.random() * 2, size: 5 + Math.random() * 5, color: cols[i % cols.length], shape: 1, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 10 });
   }
   text(x: number, y: number, text: string, color = '#fff', size = 28) {
@@ -219,8 +219,8 @@ export function hud(ctx: CanvasRenderingContext2D, w: number, score: number, fra
   roundRect(ctx, 16, 12, bw, 10, 5);
   ctx.fill();
   const g = ctx.createLinearGradient(16, 0, 16 + bw, 0);
-  g.addColorStop(0, frac < 0.25 ? '#ff5d73' : '#3ddc84');
-  g.addColorStop(1, frac < 0.25 ? '#ff9f43' : '#1fc8db');
+  g.addColorStop(0, frac < 0.25 ? '#ff1f3d' : '#1ed760');
+  g.addColorStop(1, frac < 0.25 ? '#ff6a00' : '#b8ff5c');
   ctx.fillStyle = g;
   roundRect(ctx, 16, 12, Math.max(10, bw * Math.max(0, Math.min(1, frac))), 10, 5);
   ctx.fill();
@@ -228,7 +228,7 @@ export function hud(ctx: CanvasRenderingContext2D, w: number, score: number, fra
   const txt = `${score}`;
   ctx.font = font(30);
   const tw = ctx.measureText(txt).width;
-  ctx.fillStyle = 'rgba(20,10,45,.55)';
+  ctx.fillStyle = 'rgba(40,4,12,.6)';
   roundRect(ctx, 16, 32, tw + 36, 42, 21);
   ctx.fill();
   ctx.fillStyle = '#ffd23f';

@@ -3,18 +3,23 @@
 @import '@fontsource/baloo-2/latin-800.css';
 
 :root {
-  --bg1: #2a1466;
-  --bg2: #120a33;
+  --bg1: #3a0712;
+  --bg2: #120206;
+  --rv: #ff1f3d;
+  --rv-d: #b5001c;
+  --rv-dd: #6e0012;
+  --ink-d: #2a0a10;
   --card: rgba(255, 255, 255, 0.08);
   --card-b: rgba(255, 255, 255, 0.14);
   --ink: #ffffff;
   --muted: rgba(255, 255, 255, 0.7);
-  --yellow: #ffd23f;
+  --yellow: #ffffff;
+  --gold: #ffc93c;
   --pink: #ff5d9e;
   --red: #ff4d6d;
-  --blue: #4d8bff;
+  --blue: #ff1f3d;
   --green: #3ddc84;
-  --violet: #a66bff;
+  --violet: #b06bff;
   --orange: #ff9f43;
   --radius: 22px;
   color-scheme: dark;
@@ -34,7 +39,26 @@ body {
   overscroll-behavior: none;
 }
 body {
-  background: radial-gradient(120% 80% at 50% 0%, #4b23a8 0%, var(--bg1) 40%, var(--bg2) 100%) fixed;
+  background: radial-gradient(120% 80% at 50% 0%, #8a0f24 0%, var(--bg1) 45%, var(--bg2) 100%) fixed;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: -20% -60%;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    125deg,
+    transparent 0 41%,
+    rgba(255, 255, 255, 0.16) 41% 41.6%,
+    rgba(255, 31, 61, 0.34) 41.6% 52.4%,
+    rgba(255, 255, 255, 0.16) 52.4% 53%,
+    transparent 53%
+  );
+}
+#app {
+  position: relative;
+  z-index: 1;
 }
 #app {
   min-height: 100%;
@@ -106,29 +130,29 @@ input {
   border-radius: 20px;
   font-size: 22px;
   font-weight: 800;
-  color: #2a1240;
-  background: var(--yellow);
-  box-shadow: 0 6px 0 #c99400, 0 10px 24px rgba(0, 0, 0, 0.25);
+  color: var(--rv-d);
+  background: linear-gradient(180deg, #ffffff, #ffe9ec);
+  box-shadow: 0 6px 0 #d5a7ae, 0 10px 24px rgba(0, 0, 0, 0.3);
   transition: transform 0.08s, box-shadow 0.08s;
   min-height: 60px;
 }
 .btn:active {
   transform: translateY(4px);
-  box-shadow: 0 2px 0 #c99400, 0 4px 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 0 #d5a7ae, 0 4px 10px rgba(0, 0, 0, 0.25);
 }
 .btn:disabled {
   opacity: 0.45;
   pointer-events: none;
 }
 .btn.pink {
-  background: var(--pink);
+  background: linear-gradient(180deg, #ff3d57, var(--rv-d));
   color: #fff;
-  box-shadow: 0 6px 0 #c2306f, 0 10px 24px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 6px 0 var(--rv-dd), 0 10px 24px rgba(0, 0, 0, 0.25);
 }
 .btn.blue {
-  background: var(--blue);
+  background: linear-gradient(180deg, #ff3d57, var(--rv-d));
   color: #fff;
-  box-shadow: 0 6px 0 #2546c9, 0 10px 24px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 6px 0 var(--rv-dd), 0 10px 24px rgba(0, 0, 0, 0.25);
 }
 .btn.green {
   background: var(--green);
@@ -206,11 +230,11 @@ input {
   line-height: 0.95;
   font-weight: 800;
   letter-spacing: -0.02em;
-  background: linear-gradient(180deg, #fff6c2 0%, #ffd23f 45%, #ff9f43 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 48%, #ffd6dc 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 5px 0 #b23a7a) drop-shadow(0 10px 18px rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 5px 0 var(--rv-d)) drop-shadow(0 10px 18px rgba(0, 0, 0, 0.35));
   transform: rotate(-3deg);
 }
 .logo p {
@@ -259,7 +283,7 @@ input {
 }
 .chip.on {
   background: #fff;
-  color: #2a1240;
+  color: var(--ink-d);
   border-color: #fff;
 }
 .seg {
@@ -286,7 +310,7 @@ input {
 }
 .seg button.on {
   background: #fff;
-  color: #2a1240;
+  color: var(--ink-d);
 }
 
 /* Jugadores */
@@ -309,8 +333,9 @@ input {
   font-size: 17px;
 }
 .pl.on {
-  border-color: var(--yellow);
-  background: rgba(255, 210, 63, 0.14);
+  border-color: #fff;
+  background: rgba(255, 31, 61, 0.35);
+  box-shadow: 0 0 0 3px rgba(255, 31, 61, 0.5);
 }
 .pl .badge {
   position: absolute;
@@ -319,8 +344,8 @@ input {
   min-width: 26px;
   height: 26px;
   border-radius: 13px;
-  background: var(--yellow);
-  color: #2a1240;
+  background: var(--rv);
+  color: #fff;
   font-size: 15px;
   display: grid;
   place-items: center;
@@ -426,11 +451,11 @@ input {
   inset: 0;
   display: grid;
   place-items: center;
-  background: rgba(18, 10, 51, 0.6);
+  background: rgba(30, 4, 10, 0.6);
   font-size: 160px;
   font-weight: 800;
   color: #fff;
-  text-shadow: 0 8px 0 #b23a7a, 0 16px 30px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 8px 0 var(--rv-d), 0 16px 30px rgba(0, 0, 0, 0.5);
   pointer-events: none;
 }
 .countdown span {
@@ -536,7 +561,7 @@ input {
   border: 3px solid;
 }
 .sidebox.win {
-  box-shadow: 0 0 0 3px #fff inset, 0 0 30px rgba(255, 210, 63, 0.5);
+  box-shadow: 0 0 0 3px #fff inset, 0 0 30px rgba(255, 255, 255, 0.35);
 }
 .sidehead {
   display: flex;
@@ -548,27 +573,97 @@ input {
 
 .podium {
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  flex-direction: column;
   gap: 10px;
-  margin-top: 10px;
+  margin-top: 6px;
 }
-.podium .step {
+.champs {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.champ {
+  flex: 1;
+  max-width: 340px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  flex: 1;
-  max-width: 160px;
+  padding: 12px 12px 16px;
+  border-radius: 26px;
+  background: radial-gradient(120% 90% at 50% 0%, rgba(255, 255, 255, 0.28), transparent 60%), linear-gradient(160deg, var(--c), color-mix(in srgb, var(--c) 45%, #1c0509));
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 60%, transparent), 0 0 40px color-mix(in srgb, var(--c) 70%, transparent), 0 14px 30px rgba(0, 0, 0, 0.4);
+  animation: champ 0.7s cubic-bezier(0.3, 1.5, 0.5, 1);
 }
-.podium .block {
-  width: 100%;
-  border-radius: 16px 16px 6px 6px;
-  display: grid;
-  place-items: center;
-  font-size: 34px;
+@keyframes champ {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+}
+.champ .crown {
+  margin-bottom: -8px;
+}
+.champ-name {
+  font-size: 26px;
   font-weight: 800;
-  color: #2a1240;
+  line-height: 1.05;
+  text-align: center;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+}
+.champ-pts {
+  font-size: 20px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.champ-pts span:last-child {
+  white-space: nowrap;
+}
+.champs.n3 .champ,
+.champs.n4 .champ {
+  padding: 10px 6px 12px;
+}
+.champs.n3 .champ-name,
+.champs.n4 .champ-name {
+  font-size: 20px;
+}
+.champs.n3 .champ-pts,
+.champs.n4 .champ-pts {
+  font-size: 16px;
+  flex-direction: column;
+  gap: 2px;
+}
+.champs.n4 {
+  flex-wrap: wrap;
+}
+.champs.n4 .champ {
+  flex: 1 1 40%;
+}
+.champ-pts .first {
+  background: #fff;
+  color: var(--rv-d);
+  border-radius: 999px;
+  padding: 0 12px;
+  font-size: 22px;
+}
+.place {
+  min-width: 32px;
+  font-size: 24px;
+  font-weight: 800;
+  text-align: center;
+  flex: none;
+}
+.scorerow.placed {
+  animation: in 0.4s ease-out both;
+}
+.scorerow.placed:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.scorerow.placed:nth-child(4) {
+  animation-delay: 0.3s;
 }
 .crown {
   font-size: 42px;
@@ -581,10 +676,10 @@ input {
   letter-spacing: 0.18em;
   text-align: center;
   background: #fff;
-  color: #2a1240;
+  color: var(--ink-d);
   border-radius: 24px;
   padding: 6px 0 0;
-  box-shadow: 0 6px 0 #c9b8ff;
+  box-shadow: 0 6px 0 var(--rv);
 }
 .codeinput {
   width: 100%;
@@ -666,7 +761,7 @@ input {
 }
 .tabs button.on {
   background: #fff;
-  color: #2a1240;
+  color: var(--ink-d);
 }
 .rank {
   display: flex;
@@ -675,6 +770,10 @@ input {
   padding: 10px 12px;
   border-radius: 18px;
   background: var(--card);
+}
+.rank.top {
+  background: linear-gradient(100deg, rgba(255, 31, 61, 0.55), rgba(255, 255, 255, 0.1));
+  box-shadow: inset 0 0 0 2px #fff;
 }
 .rank .pos {
   width: 30px;
@@ -725,7 +824,7 @@ input {
   bottom: 24px;
   transform: translateX(-50%);
   background: #fff;
-  color: #2a1240;
+  color: var(--ink-d);
   padding: 10px 18px;
   border-radius: 999px;
   font-weight: 800;
@@ -737,7 +836,7 @@ input {
   height: 44px;
   border-radius: 50%;
   border: 5px solid rgba(255, 255, 255, 0.2);
-  border-top-color: var(--yellow);
+  border-top-color: var(--rv);
   animation: spin 0.8s linear infinite;
   margin: 0 auto;
 }
@@ -804,7 +903,7 @@ input {
   position: fixed;
   inset: 0;
   z-index: 10;
-  background: radial-gradient(120% 80% at 50% 0%, #4b23a8 0%, var(--bg1) 45%, var(--bg2) 100%);
+  background: radial-gradient(120% 80% at 50% 0%, #8a0f24 0%, var(--bg1) 45%, var(--bg2) 100%);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -890,7 +989,7 @@ input {
   gap: 14px;
   padding: 24px;
   text-align: center;
-  background: radial-gradient(100% 70% at 50% 30%, color-mix(in srgb, var(--c) 45%, #1d1140) 0%, #120a33 100%);
+  background: radial-gradient(100% 70% at 50% 30%, color-mix(in srgb, var(--c) 45%, #1c0509) 0%, #120206 100%);
 }
 .cover h3 {
   margin: 0;
@@ -905,7 +1004,7 @@ input {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: rgba(18, 10, 51, 0.72);
+  background: rgba(30, 4, 10, 0.72);
   backdrop-filter: blur(4px);
   animation: in 0.4s ease-out;
   text-align: center;
@@ -1020,7 +1119,7 @@ input {
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
 }
 .mback {
-  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.25) 0 18%, transparent 19%), repeating-linear-gradient(45deg, #6a35d8 0 10px, #5a2bc0 10px 20px);
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.25) 0 18%, transparent 19%), repeating-linear-gradient(45deg, #e4102f 0 10px, #c10624 10px 20px);
   border: 3px solid #fff;
 }
 .mback::after {
@@ -1029,9 +1128,9 @@ input {
   inset: 0;
   display: grid;
   place-items: center;
-  color: #ffd23f;
+  color: #fff;
   font-size: 26px;
-  text-shadow: 0 2px 0 #b23a7a;
+  text-shadow: 0 2px 0 var(--rv-dd);
 }
 .mcard:not(:disabled):active .mcard-in {
   transform: scale(0.94);
@@ -1092,7 +1191,7 @@ input {
   gap: 6px;
   border-radius: 22px;
   padding: 8px;
-  background: color-mix(in srgb, var(--c) 28%, #1d1140);
+  background: color-mix(in srgb, var(--c) 28%, #1c0509);
   border: 3px solid var(--c);
   min-width: 0;
 }
@@ -1173,7 +1272,7 @@ input {
   padding: 8px;
   border-radius: 20px;
   background: linear-gradient(170deg, #fffaf0, #ffe9c7);
-  color: #2a1240;
+  color: var(--ink-d);
   border: 4px solid var(--c);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
   position: relative;
@@ -1217,7 +1316,7 @@ input {
   aspect-ratio: 1;
   border-radius: 10px;
   background: #fff;
-  color: #2a1240;
+  color: var(--ink-d);
   font-weight: 800;
   font-size: clamp(15px, 4.6vw, 30px);
   box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.08), 0 0 0 2px color-mix(in srgb, var(--k) 40%, transparent) inset;
@@ -1259,14 +1358,14 @@ input {
   border-radius: 12px;
   font-weight: 800;
   font-size: 16px;
-  background: #e8dcff;
-  color: #5a2bc0;
+  background: #ffe1e6;
+  color: var(--rv-d);
   touch-action: none;
 }
 .bclaim.big {
   flex: 1.3;
-  background: #ffe08a;
-  color: #8a5a00;
+  background: var(--rv);
+  color: #fff;
 }
 .bclaim.ready {
   background: var(--c);
@@ -1310,7 +1409,7 @@ input {
 }
 .ball span {
   background: #fff;
-  color: #2a1240;
+  color: var(--ink-d);
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -1414,7 +1513,7 @@ input {
   background: rgba(255, 255, 255, 0.35);
 }
 .sq.last {
-  box-shadow: 0 0 0 3px #ffd23f;
+  box-shadow: 0 0 0 3px #fff, 0 0 12px 3px rgba(255, 31, 61, 0.9);
   z-index: 2;
 }
 .hull {
@@ -1564,18 +1663,19 @@ input {
   gap: 14px;
   width: 100%;
   max-width: 460px;
+  padding: 4px 8px 0;
 }
 .letter {
   width: 74px;
   height: 74px;
   border-radius: 22px;
-  background: linear-gradient(160deg, #fff6c2, #ffd23f 50%, #ff9f43);
-  color: #2a1240;
+  background: linear-gradient(160deg, #ffffff, #ffe3e7);
+  color: var(--rv-d);
   font-size: 54px;
   font-weight: 800;
   display: grid;
   place-items: center;
-  box-shadow: 0 6px 0 #b23a7a, 0 12px 24px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 6px 0 var(--rv-d), 0 12px 24px rgba(0, 0, 0, 0.35);
   transform: rotate(-6deg);
   animation: pop 0.6s ease-out;
   flex: none;
@@ -1590,7 +1690,7 @@ input {
   border-radius: 22px;
   background: linear-gradient(170deg, #fffaf0, #ffeccf);
   border: 4px solid var(--c);
-  color: #2a1240;
+  color: var(--ink-d);
 }
 .tfield {
   display: grid;
@@ -1608,7 +1708,7 @@ input {
   border-radius: 12px;
   border: 2px solid #e6d3b3;
   background: #fff;
-  color: #2a1240;
+  color: var(--ink-d);
 }
 .tfield input:focus {
   outline: none;
@@ -1652,7 +1752,7 @@ input {
 .ans em {
   font-style: normal;
   background: #fff;
-  color: #2a1240;
+  color: var(--ink-d);
   border-radius: 999px;
   padding: 0 7px;
   font-size: 14px;

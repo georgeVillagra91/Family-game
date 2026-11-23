@@ -3,10 +3,10 @@ import { FX, GameDef, font, hud, loop, makeStage, pointer, rng } from '../engine
 import { sfx, vibrate } from '../audio';
 
 export const BALLOON_COLORS = [
-  { name: 'ROJO', c: '#ff4d6d', d: '#c9184a' },
-  { name: 'AZUL', c: '#4d8bff', d: '#2546c9' },
-  { name: 'VERDE', c: '#3ddc84', d: '#14a35a' },
-  { name: 'VIOLETA', c: '#a66bff', d: '#6b2fd6' }
+  { name: 'ROJO', c: '#ff1f3d', d: '#b5001c' },
+  { name: 'VERDE', c: '#1ed760', d: '#0e9c43' },
+  { name: 'VIOLETA', c: '#a259ff', d: '#6420d0' },
+  { name: 'NARANJA', c: '#ff6a00', d: '#c24400' }
 ];
 const GOLD = { name: 'DORADO', c: '#ffd23f', d: '#e09b00' };
 const DURATION = 30;
@@ -137,7 +137,7 @@ export const globos: GameDef = {
       ctx.save();
       ctx.globalAlpha = 0.25;
       for (let i = 0; i < 12; i++) {
-        ctx.fillStyle = i % 2 ? '#fff' : '#ffd23f';
+        ctx.fillStyle = i % 2 ? '#fff' : '#ffc2d1';
         ctx.beginPath();
         ctx.moveTo(w / 2, -h * 0.2);
         ctx.lineTo((i / 12) * w * 1.6 - w * 0.3, h * 1.1);
@@ -164,7 +164,7 @@ export const globos: GameDef = {
       ctx.restore();
       // indicador de color propio
       const mc = BALLOON_COLORS[mine];
-      ctx.fillStyle = 'rgba(20,10,45,.55)';
+      ctx.fillStyle = 'rgba(40,4,12,.55)';
       ctx.beginPath();
       ctx.roundRect?.(w / 2 - 92, h - 62, 184, 46, 23);
       ctx.fill();
@@ -175,7 +175,7 @@ export const globos: GameDef = {
       ctx.textBaseline = 'middle';
       ctx.fillText(`Tu color: ${mc.name}`, w / 2 - 42, h - 38);
       if (time < 0) {
-        ctx.fillStyle = 'rgba(20,10,45,.6)';
+        ctx.fillStyle = 'rgba(40,4,12,.6)';
         ctx.fillRect(0, 0, w, h);
         drawBalloon(ctx, w / 2, h / 2 - 50, 60, mc, time, false);
         ctx.font = font(40);

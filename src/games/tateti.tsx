@@ -93,7 +93,7 @@ export const tateti: VersusDef<S, A> = {
   scene: 'Pizarrón del recreo',
   type: 'Mente',
   icon: '❌',
-  color: '#1fc8db',
+  color: '#ff1f3d',
   seconds: 90,
   howTo: 'Hacé tres en línea antes que tu rival. Gana quien se lleva 2 tableros.',
   seatsBy: 'side',

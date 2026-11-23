@@ -3,7 +3,7 @@ import { FX, GameDef, font, hud, loop, makeStage, pointer, rng, roundRect } from
 import { sfx, vibrate } from '../audio';
 
 const ARROWS = 6;
-const RINGS = ['#ffd23f', '#ffd23f', '#ff4d6d', '#ff4d6d', '#4d8bff', '#4d8bff', '#2a2a3a', '#2a2a3a', '#ffffff', '#ffffff'];
+const RINGS = ['#ffd23f', '#ffd23f', '#ff1f3d', '#ff1f3d', '#ffffff', '#ffffff', '#23232b', '#23232b', '#ff1f3d', '#ffffff'];
 
 interface Stuck { x: number; y: number; pts: number; rot: number }
 
@@ -101,8 +101,8 @@ export const arqueria: GameDef = {
 
       // ---------- Dibujo ----------
       const sky = ctx.createLinearGradient(0, 0, 0, h);
-      sky.addColorStop(0, '#7fd3ff');
-      sky.addColorStop(0.55, '#c9f0ff');
+      sky.addColorStop(0, '#ffb199');
+      sky.addColorStop(0.55, '#ffe6d9');
       sky.addColorStop(0.56, '#79d17f');
       sky.addColorStop(1, '#2f9e5e');
       ctx.fillStyle = sky;
@@ -214,7 +214,7 @@ export const arqueria: GameDef = {
       }
       // viento
       const wv = winds[Math.min(shot, ARROWS - 1)];
-      ctx.fillStyle = 'rgba(20,10,45,.55)';
+      ctx.fillStyle = 'rgba(40,4,12,.6)';
       roundRect(ctx, w / 2 - 80, h * 0.62, 160, 40, 20);
       ctx.fill();
       ctx.fillStyle = '#fff';
@@ -223,7 +223,7 @@ export const arqueria: GameDef = {
       ctx.textBaseline = 'middle';
       ctx.fillText(wv === 0 ? '🍃 Sin viento' : `🍃 Viento ${wv > 0 ? '→' : '←'} ${Math.abs(wv)}`, w / 2, h * 0.62 + 21);
       // arco y carcaj
-      ctx.fillStyle = 'rgba(20,10,45,.35)';
+      ctx.fillStyle = 'rgba(40,4,12,.35)';
       for (let i = 0; i < ARROWS; i++) {
         ctx.fillStyle = i < shot ? 'rgba(255,255,255,.25)' : env.color;
         roundRect(ctx, w / 2 - (ARROWS * 22) / 2 + i * 22, h - 52, 14, 34, 7);

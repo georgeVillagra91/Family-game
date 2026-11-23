@@ -58,10 +58,10 @@ export const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().to
 
 function defaultProfiles(): Profile[] {
   return [
-    { id: uid(), name: 'Sofi', level: 3, avatar: { skin: 1, hair: 3, hairColor: 1, eyes: 1, mouth: 0, acc: 0, bg: 7, shirt: 7 } },
-    { id: uid(), name: 'George', level: 3, avatar: { skin: 2, hair: 1, hairColor: 0, eyes: 0, mouth: 1, acc: 1, bg: 2, shirt: 2 } },
-    { id: uid(), name: 'Cande', level: 2, avatar: { skin: 1, hair: 4, hairColor: 2, eyes: 4, mouth: 0, acc: 3, bg: 5, shirt: 5 } },
-    { id: uid(), name: 'Guille', level: 1, avatar: { skin: 1, hair: 5, hairColor: 1, eyes: 1, mouth: 2, acc: 5, bg: 4, shirt: 4 } }
+    { id: uid(), name: 'Sofi', level: 3, avatar: { skin: 1, hair: 8, hairColor: 2, eyes: 5, mouth: 5, acc: 9, bg: 7, shirt: 0, beard: 0 } },
+    { id: uid(), name: 'George', level: 3, avatar: { skin: 2, hair: 12, hairColor: 0, eyes: 0, mouth: 1, acc: 0, bg: 0, shirt: 2, beard: 2 } },
+    { id: uid(), name: 'Cande', level: 2, avatar: { skin: 1, hair: 9, hairColor: 1, eyes: 4, mouth: 0, acc: 3, bg: 6, shirt: 6, beard: 0 } },
+    { id: uid(), name: 'Guille', level: 1, avatar: { skin: 1, hair: 11, hairColor: 2, eyes: 1, mouth: 2, acc: 5, bg: 3, shirt: 3, beard: 0 } }
   ];
 }
 
@@ -151,7 +151,7 @@ export function computeStats(): PlayerStats[] {
       }
     });
   }
-  return [...map.values()].sort((a, b) => b.wins - a.wins || b.stars - a.stars || b.played - a.played);
+  return [...map.values()].sort((a, b) => b.wins - a.wins || b.roundsWon - a.roundsWon || b.stars - a.stars || a.played - b.played);
 }
 
 export interface GameRecord {

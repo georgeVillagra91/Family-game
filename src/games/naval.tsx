@@ -154,7 +154,7 @@ function View({ s, ctx, me, act }: ViewProps<S, A>) {
       <div class="muted seatlabel">Tu mar</div>
       <Board ships={s.ships[shooterView]} shots={s.shots[1 - shooterView]} showShips lastCell={lastOnMe} />
       {s.phase === 'over' && (
-        <div class="vswin" style={{ background: 'rgba(18,10,51,.55)' }}>
+        <div class="vswin" style={{ background: 'rgba(30,4,10,.55)' }}>
           <div class="crown">⚓</div>
           <h3>¡Gana {ctx.seats[s.winner!].name}!</h3>
         </div>
@@ -170,7 +170,7 @@ export const naval: VersusDef<S, A> = {
   scene: 'Mar de los Piratas',
   type: 'Mente',
   icon: '⚓',
-  color: '#4d8bff',
+  color: '#ff6a00',
   seconds: 240,
   howTo: 'Escondé tu flota y adiviná dónde está la del rival. Si acertás, seguís disparando. ¡Hundí todos sus barcos!',
   seatsBy: 'side',

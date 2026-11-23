@@ -155,7 +155,7 @@ function Track({ s, ctx, flip }: { s: S; ctx: VCtx; flip?: boolean }) {
       }
     }
     if (s.count > 0 || (s.t < 0.7 && s.count <= 0)) {
-      g.fillStyle = 'rgba(18,10,51,.35)';
+      g.fillStyle = 'rgba(30,4,10,.35)';
       g.fillRect(0, 0, w, h);
       g.font = `800 ${Math.round(Math.min(h * 0.6, 90))}px "Baloo 2", sans-serif`;
       g.textAlign = 'center';

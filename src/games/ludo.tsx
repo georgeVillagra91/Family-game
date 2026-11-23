@@ -184,8 +184,8 @@ function View({ s, ctx, me, act }: ViewProps<S, A>) {
   const prevRoll = useRef(s.rolling > 0);
   useEffect(() => {
     const r = s.rolling > 0;
-    if (r && !prevRoll.current) sfx.whoosh();
-    if (!r && prevRoll.current && s.die) s.die === 6 ? sfx.coin() : sfx.click();
+    if (r && !prevRoll.current) sfx.dice();
+    if (!r && prevRoll.current && s.die) s.die === 6 ? sfx.good() : sfx.click();
     prevRoll.current = r;
   });
   const seat = ctx.seats[s.turn];
@@ -206,7 +206,7 @@ function View({ s, ctx, me, act }: ViewProps<S, A>) {
         </div>
       </div>
       {s.winner !== null && (
-        <div class="vswin" style={{ background: 'rgba(18,10,51,.55)' }}>
+        <div class="vswin" style={{ background: 'rgba(30,4,10,.55)' }}>
           <div class="crown">👑</div>
           <h3>¡Gana {ctx.seats[s.winner].name}!</h3>
         </div>

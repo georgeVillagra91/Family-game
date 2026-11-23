@@ -9,7 +9,7 @@ import { sfx, vibrate } from '../audio';
 
 const MAXN = 40;
 const EVERY = 3.2;
-const COLCOL = ['#ff4d6d', '#ffb020', '#3ddc84', '#4d8bff'];
+const COLCOL = ['#ff1f3d', '#ff6a00', '#1ed760', '#a259ff'];
 
 interface S {
   cards: number[][]; // 16 números por asiento (columna por columna)
